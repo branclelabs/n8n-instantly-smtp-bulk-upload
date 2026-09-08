@@ -8,6 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
 <!-- TODO: Add docs/assets/demo.gif — Manual trigger processing 3 blank rows -->
+
 ![Workflow overview](assets/architecture.png)
 
 ## Contents
@@ -28,13 +29,13 @@
 
 ## Features
 
-| Feature | How it works in this workflow |
-|---|---|
-| Blank-only processing | `Keep Blanks Only` filters `Status is empty` — safe idempotent reruns |
-| Existence guard | `GET /api/v2/accounts/{email}` + `Skip Existing` IF prevents duplicates |
-| Custom SMTP mapping | `POST /api/v2/accounts` with `provider_code: 1`, trims/lowercases email, casts ports with `Number()` |
-| Sequential reliability | `Loop Each Row (SplitInBatches batchSize 1)` + 30s timeout, 3 retries, 2s wait |
-| Auto write-back | `Update Status` (`appendOrUpdate` match on `Email`) writes `Added` or `Failed - reason` |
+| Feature                | How it works in this workflow                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| Blank-only processing  | `Keep Blanks Only` filters `Status is empty` — safe idempotent reruns                                |
+| Existence guard        | `GET /api/v2/accounts/{email}` + `Skip Existing` IF prevents duplicates                              |
+| Custom SMTP mapping    | `POST /api/v2/accounts` with `provider_code: 1`, trims/lowercases email, casts ports with `Number()` |
+| Sequential reliability | `Loop Each Row (SplitInBatches batchSize 1)` + 30s timeout, 3 retries, 2s wait                       |
+| Auto write-back        | `Update Status` (`appendOrUpdate` match on `Email`) writes `Added` or `Failed - reason`              |
 
 What it does NOT do: manual trigger only, no warm-up management, no parallel bulk, no OAuth mailbox flows.
 
@@ -84,20 +85,20 @@ Last tested: n8n 1.x + Instantly API v2 on 2026-09-08.
 
 ## Google Sheet Schema
 
-| Column | Type | Required | Notes |
-|---|---|---|---|
-| `Email` | string email | Yes | Trimmed + lowercased, matching key, unique |
-| `First Name` | string | Yes | Trimmed |
-| `Last Name` | string | Yes | Trimmed |
-| `IMAP Username` | string | Yes | Usually = Email |
-| `IMAP Password` | secret string | Yes | Never commit, no trim |
-| `IMAP Host` | hostname | Yes | e.g. `mail.example.com` |
-| `IMAP Port` | number string | Yes | `993`, cast with `Number()` |
-| `SMTP Username` | string | Yes | Usually = Email |
-| `SMTP Password` | secret string | Yes | Never commit, no trim |
-| `SMTP Host` | hostname | Yes | e.g. `mail.example.com` |
-| `SMTP Port` | number string | Yes | `587`, cast with `Number()` |
-| `Status` | string | No | Leave blank to process; workflow writes `Added` / `Failed - reason` |
+| Column          | Type          | Required | Notes                                                               |
+| --------------- | ------------- | -------- | ------------------------------------------------------------------- |
+| `Email`         | string email  | Yes      | Trimmed + lowercased, matching key, unique                          |
+| `First Name`    | string        | Yes      | Trimmed                                                             |
+| `Last Name`     | string        | Yes      | Trimmed                                                             |
+| `IMAP Username` | string        | Yes      | Usually = Email                                                     |
+| `IMAP Password` | secret string | Yes      | Never commit, no trim                                               |
+| `IMAP Host`     | hostname      | Yes      | e.g. `mail.example.com`                                             |
+| `IMAP Port`     | number string | Yes      | `993`, cast with `Number()`                                         |
+| `SMTP Username` | string        | Yes      | Usually = Email                                                     |
+| `SMTP Password` | secret string | Yes      | Never commit, no trim                                               |
+| `SMTP Host`     | hostname      | Yes      | e.g. `mail.example.com`                                             |
+| `SMTP Port`     | number string | Yes      | `587`, cast with `Number()`                                         |
+| `Status`        | string        | No       | Leave blank to process; workflow writes `Added` / `Failed - reason` |
 
 Rules: header case-sensitive, no extra spaces, `Status` blank = todo, `Email` unique.
 
@@ -121,16 +122,16 @@ Rules: header case-sensitive, no extra spaces, `Status` blank = todo, `Email` un
 
 ## Troubleshooting
 
-| Symptom | Likely cause | First fix |
-|---|---|---|
-| No rows processed | No blank `Status` or header mismatch | Check exact `Status` empty + header case |
-| 401 Unauthorized | Placeholder key not replaced / revoked | Update both HTTP nodes, same key |
-| 402 Payment Required | No paid Instantly plan | Upgrade workspace, rerun blanks |
-| 403 scope | Key lacks `accounts:create` | Recreate key with read+write scopes |
-| 429 rate limit | Too fast / parallel runs | Keep batch 1, add Wait, rerun blanks |
-| `Failed - NaN` / 400 ports | Text in port cells | Ensure numeric `993`/`587`, code casts with `Number()` |
-| Status never updates | `Update Status` value empty / Email mismatch | Verify mapping has Email+Status, matching on `Email`, trim spaces |
-| Google 403 | Sheet not shared to OAuth identity | Share sheet, reconnect credential |
+| Symptom                    | Likely cause                                 | First fix                                                         |
+| -------------------------- | -------------------------------------------- | ----------------------------------------------------------------- |
+| No rows processed          | No blank `Status` or header mismatch         | Check exact `Status` empty + header case                          |
+| 401 Unauthorized           | Placeholder key not replaced / revoked       | Update both HTTP nodes, same key                                  |
+| 402 Payment Required       | No paid Instantly plan                       | Upgrade workspace, rerun blanks                                   |
+| 403 scope                  | Key lacks `accounts:create`                  | Recreate key with read+write scopes                               |
+| 429 rate limit             | Too fast / parallel runs                     | Keep batch 1, add Wait, rerun blanks                              |
+| `Failed - NaN` / 400 ports | Text in port cells                           | Ensure numeric `993`/`587`, code casts with `Number()`            |
+| Status never updates       | `Update Status` value empty / Email mismatch | Verify mapping has Email+Status, matching on `Email`, trim spaces |
+| Google 403                 | Sheet not shared to OAuth identity           | Share sheet, reconnect credential                                 |
 
 See [`docs/05-TROUBLESHOOTING.md`](./docs/05-TROUBLESHOOTING.md).
 

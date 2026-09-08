@@ -31,6 +31,7 @@ By participating you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md)
 Allowed `type`: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `security`, `revert`.
 
 Examples:
+
 ```text
 feat(instantly): add exponential backoff on 429
 fix(sheets): map blank Status rows only

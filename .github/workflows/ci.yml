@@ -34,4 +34,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npx --yes prettier@3.3.3 --check "workflows/*.json" "examples/**/*" "docs/**/*.md" "*.md"
+      - run: npx --yes prettier@3.3.3 --check "workflows/*.json" "examples/*.json" "docs/**/*.md" "*.md" "scripts/*.mjs" ".github/**/*.yml"

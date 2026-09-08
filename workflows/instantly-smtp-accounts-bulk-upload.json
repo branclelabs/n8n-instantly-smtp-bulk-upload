@@ -7,10 +7,7 @@
       "name": "Start Manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [
-        240,
-        448
-      ],
+      "position": [240, 448],
       "notes": "Initiates the bulk email account upload process. Execute manually to process all sheet rows with blank Status."
     },
     {
@@ -29,10 +26,7 @@
       "name": "Get Sheet Rows",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [
-        464,
-        448
-      ],
+      "position": [464, 448],
       "notes": "Retrieves all rows from the SMTP Bulk Upload sheet. Requires valid Google credentials and document access."
     },
     {
@@ -64,10 +58,7 @@
       "name": "Keep Blanks Only",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
-      "position": [
-        688,
-        448
-      ],
+      "position": [688, 448],
       "notes": "Filters to rows where Status is empty for processing. Previously completed rows are excluded from reruns."
     },
     {
@@ -78,10 +69,7 @@
       "name": "Loop Each Row",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [
-        912,
-        448
-      ],
+      "position": [912, 448],
       "notes": "Processes sheet rows sequentially one at a time. Ensures reliable API pacing and accurate status tracking."
     },
     {
@@ -107,10 +95,7 @@
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 2000,
-      "position": [
-        1136,
-        384
-      ],
+      "position": [1136, 384],
       "onError": "continueErrorOutput",
       "notes": "Verifies account existence in Instantly via lookup. Determines whether creation or skip is required."
     },
@@ -143,10 +128,7 @@
       "name": "Skip Existing",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [
-        1360,
-        448
-      ],
+      "position": [1360, 448],
       "notes": "Routes existing accounts to status update without duplication. New addresses proceed to account creation."
     },
     {
@@ -180,10 +162,7 @@
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 2000,
-      "position": [
-        1584,
-        304
-      ],
+      "position": [1584, 304],
       "onError": "continueErrorOutput",
       "notes": "Creates a custom SMTP account in Instantly via v2 API. Maps sheet fields dynamically with provider code 1."
     },
@@ -204,9 +183,7 @@
             "Email": "={{ $('Loop Each Row').item.json.Email }}",
             "Status": "={{ $json.error ? ('Failed - ' + JSON.stringify($json.error.message || $json.error).slice(0, 200)) : 'Added' }}"
           },
-          "matchingColumns": [
-            "Email"
-          ],
+          "matchingColumns": ["Email"],
           "schema": [
             {
               "id": "Email",
@@ -338,10 +315,7 @@
       "name": "Update Status",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [
-        1808,
-        496
-      ],
+      "position": [1808, 496],
       "notes": "Records the processing outcome back to the Status column. Matches on Email and continues to the next row."
     }
   ],
