@@ -1,0 +1,21 @@
+{
+  "name": "n8n-instantly-smtp-bulk-upload",
+  "version": "1.0.0",
+  "description": "Sanitized n8n workflow for bulk SMTP account upload to Instantly via API.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-workflow.mjs",
+    "sanitize": "node scripts/sanitize-workflow.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "format": "prettier --write \"**/*.{json,jsonc,md,js,mjs,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{json,jsonc,md,js,mjs,yml,yaml}\""
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "prettier": "^3.3.3"
+  }
+}

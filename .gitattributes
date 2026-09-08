@@ -1,0 +1,11 @@
+*.json text eol=lf diff=json
+*.jsonc text eol=lf diff=json
+*.csv text eol=lf diff
+*.md text eol=lf diff=markdown
+*.yml text eol=lf diff=yaml
+*.yaml text eol=lf diff=yaml
+*.js text eol=lf diff=javascript
+*.mjs text eol=lf diff=javascript
+*.png binary
+*.jpg binary
+*.gif binary

@@ -1,0 +1,35 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node
+node_modules/
+dist/
+coverage/
+
+# n8n / secrets - never commit
+*credential*.json
+*credentials*.json
+*creds*.json
+service-account*.json
+*.pem
+*.key
+
+# Real data / PII
+*.csv
+!examples/**/*.csv
+backups/
+dumps/
+*.backup.json
