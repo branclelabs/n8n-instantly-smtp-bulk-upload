@@ -1,0 +1,10 @@
+[
+  {
+    "Email": "john.doe@example.com",
+    "Status": "Added"
+  },
+  {
+    "Email": "jane.smith@example.com",
+    "Status": "Failed - Account already exists"
+  }
+]
