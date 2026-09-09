@@ -1,3 +1,0 @@
-Email,First Name,Last Name,IMAP Username,IMAP Password,IMAP Host,IMAP Port,SMTP Username,SMTP Password,SMTP Host,SMTP Port,Status
-john.doe@example.com,John,Doe,john.doe@example.com,dummy-imap-pass-1,imap.example.com,993,john.doe@example.com,dummy-smtp-pass-1,smtp.example.com,587,
-jane.smith@example.com,Jane,Smith,jane.smith@example.com,dummy-imap-pass-2,imap.example.com,993,jane.smith@example.com,dummy-smtp-pass-2,smtp.example.com,587,
