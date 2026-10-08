@@ -1,13 +1,23 @@
 # n8n-instantly-smtp-bulk-upload
 
-> Bulk-create custom SMTP accounts in Instantly API v2 from Google Sheets, with skip-if-exists and status write-back.
+> Bulk-create custom SMTP accounts in Instantly API v2 from Google Sheets — skip-if-exists, skip-on-failure, zero sheet writes.
 
 [![n8n](https://img.shields.io/badge/n8n-compatible-EA4B71?logo=n8n&logoColor=white)](https://n8n.io) [![Instantly v2](https://img.shields.io/badge/Instantly-API%20v2-blue)](https://developer.instantly.ai) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+> **Source-of-truth notice.** The live n8n workflow is the source of truth.
+> The checked-in file `workflows/instantly-smtp-accounts-bulk-upload.json`
+> currently describes an older 8-node revision (with a `Status` write-back
+> column) and lags behind — do not import it until it is re-exported.
+> The docs below describe the live 7-node workflow.
+
 ## What is this?
 
-Import-ready n8n workflow that reads SMTP account rows from Google Sheets and bulk-creates them as custom accounts in Instantly.
-It skips accounts that already exist and writes back `Added` / `Failed` status to the sheet.
+A production n8n workflow that reads SMTP account rows from Google Sheets
+and bulk-creates them as custom accounts in Instantly. It checks each
+account with a per-row lookup, skips accounts that already exist, skips
+rows that fail without halting the run, and never writes back to the
+sheet — the sheet is read-only input. Verification happens via the
+Instantly dashboard count plus the n8n execution log.
 
 Full documentation lives in `docs/` — this README is only a pointer:
 
@@ -17,18 +27,21 @@ Full documentation lives in `docs/` — this README is only a pointer:
 
 ## Quickstart
 
-1. Copy CSV headers from `docs/GUIDE.md` into row 1 of your Google Sheet.
-2. In n8n, import `workflows/instantly-smtp-accounts-bulk-upload.json`.
-3. Connect credentials: Google Sheets OAuth2 and Instantly generic header auth.
-4. Replace placeholders `YOUR_INSTANTLY_API_KEY` in the Bearer header and `YOUR_GOOGLE_SHEET_ID` in Sheet nodes.
-5. Click Execute, then verify new rows show `Added` in the status column.
+1. Copy CSV headers from `docs/GUIDE.md` into row 1 of your Google Sheet
+   (11 columns — there is no `Status` column).
+2. In n8n, open the live `Instantly SMTP Accounts – Bulk Upload` workflow
+   (or import a freshly exported JSON once available).
+3. Connect credentials: Google Sheets OAuth2; paste the Instantly API key
+   into the `Authorization` header of both HTTP nodes.
+4. Click Execute, then verify via Instantly → Accounts (dashboard count
+   delta) and the n8n execution (created / skipped / failed counts).
 
 > Do not commit real keys or sheet IDs — all credentials and IDs in this repo are placeholders.
 
 ## Repository layout
 
-- `workflows/` — import-ready n8n workflow JSON
-- `docs/` — full guides and runbook
+- `workflows/` — n8n workflow JSON (**currently stale**, see notice above)
+- `docs/` — full guides and runbook (track the live workflow)
 
 ## Contributing
 
