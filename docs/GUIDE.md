@@ -1,13 +1,9 @@
 # n8n-instantly-smtp-bulk-upload — Technical Reference Guide
 
-> **Workflow:** `Instantly SMTP Accounts – Bulk Upload` (live n8n canvas)
+> **Workflow:** `Instantly SMTP Accounts – Bulk Upload`
+> (canonical JSON: `workflows/instantly-smtp-accounts-bulk-upload.json`)
 > **n8n executionOrder:** `v1` · **Nodes:** 7 · **Trigger:** Manual
 > **Audience:** Builders, operators, reviewers
->
-> **Source-of-truth notice.** The live canvas is canonical. The checked-in
-> `workflows/instantly-smtp-accounts-bulk-upload.json` is an older 8-node
-> revision (with a `Status` write-back column) — do not import it until it
-> is re-exported. This guide tracks the live 7-node, status-less workflow.
 
 ---
 
@@ -126,7 +122,7 @@ Notes:
 ```text
 .
 ├── workflows/
-│   └── instantly-smtp-accounts-bulk-upload.json   # STALE 8-node export — do not import
+│   └── instantly-smtp-accounts-bulk-upload.json   # canonical workflow (import this)
 ├── docs/
 │   ├── README.md
 │   ├── GUIDE.md
@@ -139,7 +135,7 @@ Notes:
 
 Canonical sources of truth:
 
-- Workflow topology: the **live n8n canvas** (repo JSON is stale).
+- Workflow topology: `workflows/instantly-smtp-accounts-bulk-upload.json`.
 - Sheet contract: header block in [§3](#3-google-sheet-schema--11-columns).
 - POST contract: sample body in [§13.1](#131-sample-post-json).
 - Secrets template: `.env.example`.
@@ -1034,7 +1030,7 @@ cp .env.example .env
 # 3. Prepare Sheet from the header block in [§3](#3-google-sheet-schema--11-columns)
 # → create Google Sheet, paste header + 1 test row
 
-# 4. Open the live workflow in n8n (repo JSON is stale — do not import it)
+# 4. Import the canonical workflow in n8n (Workflows → Import from File)
 
 # 5. Wire credentials + document/tab + API key, then Execute
 ```
@@ -1238,4 +1234,4 @@ and diff `connections` output indexes (`done`/`loop`, `true`/`false`,
 
 ---
 
-*End of GUIDE.md — live workflow is canonical; repo JSON is stale until re-exported.*
+*End of GUIDE.md — canonical workflow: `workflows/instantly-smtp-accounts-bulk-upload.json`.*
