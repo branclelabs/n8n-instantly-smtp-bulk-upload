@@ -35,6 +35,7 @@ Full documentation lives in `docs/` — this README is only a pointer:
 
 - `workflows/` — canonical n8n workflow JSON (import this)
 - `docs/` — full guides and runbook (track the live workflow)
+- `CHANGELOG.md` — history of the 7-node rewrite (v2.0.0)
 
 ## Contributing
 

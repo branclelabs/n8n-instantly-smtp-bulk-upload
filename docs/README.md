@@ -428,7 +428,7 @@ Both HTTP nodes share the same key. Fixing one and forgetting the other leaves h
 | Settings | Keep `active: false`, `executionOrder: v1`, `saveDataSuccessExecution: none`, `saveManualExecutions: true` unless RUNBOOK scheduling says otherwise. |
 | Node upgrades | Accept migrations, diff vs 7-node list, run smoke test. |
 | Failures leave no sheet trail | Audit via execution log + dashboard delta only. |
-| Change log | Commit messages name nodes (e.g., `fix(Add Account): raise timeout to 30s`). |
+| Change log | Commit messages name nodes (e.g., `fix(Add Account): raise timeout to 30s`). See `CHANGELOG.md` for v2.0.0 history. |
 | Secret hygiene | Live values in n8n runtime only; never in git. |
 | Review cadence | Re-smoke-test quarterly or after n8n minor / Instantly changelog. |
 ## License and Support
