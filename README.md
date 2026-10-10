@@ -4,12 +4,6 @@
 
 [![n8n](https://img.shields.io/badge/n8n-compatible-EA4B71?logo=n8n&logoColor=white)](https://n8n.io) [![Instantly v2](https://img.shields.io/badge/Instantly-API%20v2-blue)](https://developer.instantly.ai) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Source-of-truth notice.** The live n8n workflow is the source of truth.
-> The checked-in file `workflows/instantly-smtp-accounts-bulk-upload.json`
-> currently describes an older 8-node revision (with a `Status` write-back
-> column) and lags behind — do not import it until it is re-exported.
-> The docs below describe the live 7-node workflow.
-
 ## What is this?
 
 A production n8n workflow that reads SMTP account rows from Google Sheets
@@ -29,8 +23,7 @@ Full documentation lives in `docs/` — this README is only a pointer:
 
 1. Copy CSV headers from `docs/GUIDE.md` into row 1 of your Google Sheet
    (11 columns — there is no `Status` column).
-2. In n8n, open the live `Instantly SMTP Accounts – Bulk Upload` workflow
-   (or import a freshly exported JSON once available).
+2. In n8n, import `workflows/instantly-smtp-accounts-bulk-upload.json`.
 3. Connect credentials: Google Sheets OAuth2; paste the Instantly API key
    into the `Authorization` header of both HTTP nodes.
 4. Click Execute, then verify via Instantly → Accounts (dashboard count
@@ -40,7 +33,7 @@ Full documentation lives in `docs/` — this README is only a pointer:
 
 ## Repository layout
 
-- `workflows/` — n8n workflow JSON (**currently stale**, see notice above)
+- `workflows/` — canonical n8n workflow JSON (import this)
 - `docs/` — full guides and runbook (track the live workflow)
 
 ## Contributing
