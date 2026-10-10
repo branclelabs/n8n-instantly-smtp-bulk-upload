@@ -1,5 +1,5 @@
 {
-  "name": "Instantly SMTP Accounts \u2013 Bulk Upload",
+  "name": "Instantly SMTP Accounts – Bulk Upload",
   "nodes": [
     {
       "parameters": {},
@@ -7,18 +7,27 @@
       "name": "Start Manually",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [240, 448],
+      "position": [
+        240,
+        656
+      ],
       "notes": "Initiates the bulk email account upload process. Execute manually to process all sheet rows with blank Status."
     },
     {
       "parameters": {
         "documentId": {
+          "__rl": true,
+          "value": "1YUxjzzkfOyWBf9ZtbrxeWL75feaCdE4WWGkz4j4x1M4",
           "mode": "list",
-          "value": "YOUR_GOOGLE_SHEET_ID"
+          "cachedResultName": "SMTP Bulk Upload",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YUxjzzkfOyWBf9ZtbrxeWL75feaCdE4WWGkz4j4x1M4/edit?usp=drivesdk"
         },
         "sheetName": {
+          "__rl": true,
+          "value": 12536934,
           "mode": "list",
-          "value": "YOUR_SHEET_NAME"
+          "cachedResultName": "Instantly Bulk Upload",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YUxjzzkfOyWBf9ZtbrxeWL75feaCdE4WWGkz4j4x1M4/edit#gid=12536934"
         },
         "options": {}
       },
@@ -26,40 +35,17 @@
       "name": "Get Sheet Rows",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [464, 448],
-      "notes": "Retrieves all rows from the SMTP Bulk Upload sheet. Requires valid Google credentials and document access."
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "cond1",
-              "leftValue": "={{ $json.Status }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "empty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
+      "position": [
+        464,
+        656
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5ut8DRdupJsdqbn4",
+          "name": "Google Sheets account"
+        }
       },
-      "id": "28089a34-a1f5-4690-980b-31bd117379e1",
-      "name": "Keep Blanks Only",
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.3,
-      "position": [688, 448],
-      "notes": "Filters to rows where Status is empty for processing. Previously completed rows are excluded from reruns."
+      "notes": "Retrieves all rows from the SMTP Bulk Upload sheet. Requires valid Google credentials and document access."
     },
     {
       "parameters": {
@@ -69,35 +55,11 @@
       "name": "Loop Each Row",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [912, 448],
+      "position": [
+        912,
+        656
+      ],
       "notes": "Processes sheet rows sequentially one at a time. Ensures reliable API pacing and accurate status tracking."
-    },
-    {
-      "parameters": {
-        "url": "=https://api.instantly.ai/api/v2/accounts/{{ $json.Email.toString().trim().toLowerCase() }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer YOUR_INSTANTLY_API_KEY"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000
-        }
-      },
-      "id": "4f86eafa-dbcb-4600-a083-f522408b27e8",
-      "name": "Check Exists",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.5,
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 2000,
-      "position": [1136, 384],
-      "onError": "continueErrorOutput",
-      "notes": "Verifies account existence in Instantly via lookup. Determines whether creation or skip is required."
     },
     {
       "parameters": {
@@ -114,9 +76,9 @@
               "leftValue": "={{ $json.email }}",
               "rightValue": "",
               "operator": {
-                "type": "string",
                 "operation": "notEmpty",
-                "singleValue": true
+                "singleValue": true,
+                "type": "string"
               }
             }
           ],
@@ -128,8 +90,11 @@
       "name": "Skip Existing",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [1360, 448],
-      "notes": "Routes existing accounts to status update without duplication. New addresses proceed to account creation."
+      "position": [
+        1360,
+        384
+      ],
+      "notes": "Routes on the GET response (lowercase email = exists -> back to Loop; empty -> Add Account)."
     },
     {
       "parameters": {
@@ -160,163 +125,58 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "retryOnFail": true,
-      "maxTries": 3,
+      "maxTries": 2,
       "waitBetweenTries": 2000,
-      "position": [1584, 304],
+      "position": [
+        1584,
+        528
+      ],
       "onError": "continueErrorOutput",
-      "notes": "Creates a custom SMTP account in Instantly via v2 API. Maps sheet fields dynamically with provider code 1."
+      "notes": "Creates a custom SMTP account in Instantly via v2 API (12 fields, provider_code 1). Timeout 30s: creates verify live mailboxes and can take a while; GET probe stays at 10s."
     },
     {
       "parameters": {
-        "operation": "appendOrUpdate",
-        "documentId": {
-          "mode": "list",
-          "value": "YOUR_GOOGLE_SHEET_ID"
-        },
-        "sheetName": {
-          "mode": "list",
-          "value": "YOUR_SHEET_NAME"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Email": "={{ $('Loop Each Row').item.json.Email }}",
-            "Status": "={{ $json.error ? ('Failed - ' + JSON.stringify($json.error.message || $json.error).slice(0, 200)) : 'Added' }}"
-          },
-          "matchingColumns": ["Email"],
-          "schema": [
-            {
-              "id": "Email",
-              "displayName": "Email",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "First Name",
-              "displayName": "First Name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "Last Name",
-              "displayName": "Last Name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "IMAP Username",
-              "displayName": "IMAP Username",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "IMAP Password",
-              "displayName": "IMAP Password",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "IMAP Host",
-              "displayName": "IMAP Host",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "IMAP Port",
-              "displayName": "IMAP Port",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "SMTP Username",
-              "displayName": "SMTP Username",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "SMTP Password",
-              "displayName": "SMTP Password",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "SMTP Host",
-              "displayName": "SMTP Host",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "SMTP Port",
-              "displayName": "SMTP Port",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "Status",
-              "displayName": "Status",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
+        "jsCode": "return $input.all().filter((item) => String(item.json?.Email ?? '').trim() !== '');"
       },
-      "id": "f5ae313a-f3fd-4c24-80a3-9e23e6b25338",
-      "name": "Update Status",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [1808, 496],
-      "notes": "Records the processing outcome back to the Status column. Matches on Email and continues to the next row."
+      "id": "62d0ead1-610a-4680-9f3a-d5c6e24d8736",
+      "name": "Keep Valid Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        656
+      ],
+      "notes": "Trim-aware gate: keeps only rows with a real Email. Drops empty and whitespace-only trailing rows before the loop (a plain 'is not empty' check lets whitespace through)."
+    },
+    {
+      "parameters": {
+        "url": "=https://api.instantly.ai/api/v2/accounts/{{ $json.Email.toString().trim().toLowerCase() }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_INSTANTLY_API_KEY"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "1a35b3bc-b7ab-4832-a768-d01365754862",
+      "name": "Check Exists",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "position": [
+        1136,
+        464
+      ],
+      "onError": "continueErrorOutput",
+      "notes": "Per-row existence probe inside the loop. 200 with email = exists -> skip; 404/error output = missing -> Add Account. Paste live key to run; export-safe placeholder committed."
     }
   ],
   "pinData": {},
@@ -332,18 +192,54 @@
         ]
       ]
     },
-    "Get Sheet Rows": {
+    "Skip Existing": {
       "main": [
         [
           {
-            "node": "Keep Blanks Only",
+            "node": "Loop Each Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Account",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Keep Blanks Only": {
+    "Add Account": {
+      "main": [
+        [
+          {
+            "node": "Loop Each Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Each Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Sheet Rows": {
+      "main": [
+        [
+          {
+            "node": "Keep Valid Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep Valid Rows": {
       "main": [
         [
           {
@@ -383,53 +279,6 @@
           }
         ]
       ]
-    },
-    "Skip Existing": {
-      "main": [
-        [
-          {
-            "node": "Update Status",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Add Account",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Add Account": {
-      "main": [
-        [
-          {
-            "node": "Update Status",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Update Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Status": {
-      "main": [
-        [
-          {
-            "node": "Loop Each Row",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
@@ -437,14 +286,16 @@
     "executionOrder": "v1",
     "binaryMode": "separate",
     "saveExecutionProgress": true,
-    "saveManualExecutions": false,
+    "saveManualExecutions": true,
     "saveDataErrorExecution": "all",
-    "saveDataSuccessExecution": "none",
-    "executionTimeout": 300
+    "saveDataSuccessExecution": "none"
   },
+  "versionId": "6462533f-6362-4613-829b-fc3ecbe22841",
   "meta": {
-    "templateCredsSetupCompleted": true
+    "templateCredsSetupCompleted": true,
+    "instanceId": "532bd4923d6f7b7bdaecf2672ea083b7840d16dfb7f1c5e405fad1e845960143"
   },
   "nodeGroups": [],
+  "id": "OVBQJvQKkmYyERgm",
   "tags": []
 }
