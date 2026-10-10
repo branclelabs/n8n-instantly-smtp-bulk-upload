@@ -3,7 +3,6 @@
 [![n8n >=1.x](https://img.shields.io/badge/n8n-%3E%3D1.x-blue)](#prerequisites) [![7 nodes](https://img.shields.io/badge/workflow-7_nodes-green)](#workflow-at-a-glance--7-nodes) [![Sheets](https://img.shields.io/badge/source-Google_Sheets-yellow)](#google-sheet-preparation) [![Instantly v2](https://img.shields.io/badge/target-Instantly.ai_v2-purple)](#prerequisites)
 ## Pitch
 Manually adding dozens or hundreds of custom SMTP mailboxes in the Instantly.ai UI is slow, error-prone, and unauditable. This repo documents a single production n8n workflow that reads candidate accounts from a Google Sheet, checks each one against Instantly with a per-row `GET /api/v2/accounts/{email}`, creates only missing accounts via `POST /api/v2/accounts` with full IMAP+SMTP settings, and skips failures without halting the run — so a run either creates or skips every row, reruns are safe by construction, and verification happens through the Instantly dashboard count plus the n8n execution log.
-> **Source-of-truth notice.** The live n8n workflow (`Instantly SMTP Accounts – Bulk Upload`) is the source of truth. The checked-in file `workflows/instantly-smtp-accounts-bulk-upload.json` describes an older 8-node revision (with a `Status` write-back column) and lags behind — do not import it until it is re-exported. This guide tracks the live 7-node workflow.
 ## Table of Contents
 - [How to Read This Repo](#how-to-read-this-repo)
 - [What It Does](#what-it-does)
@@ -28,13 +27,16 @@ This README is the onboarding front door. It gets you from zero to a first green
 | `docs/README.md` (this file) | Onboarding, prerequisites, sheet prep, credentials, import, quickstart, smoke test | Start here. Read Sections 1–12 in order. |
 | `docs/GUIDE.md` | Deep-dive operator guide: every node, expression, mapping, customization recipes | After first green run or when changing logic. |
 | `docs/RUNBOOK.md` | Day-2 operations: monitoring, re-runs, triage, rate limits, rollback, scheduling | Before scheduling or when something fails. |
-| `workflows/instantly-smtp-accounts-bulk-upload.json` | Stale reference export (8-node revision) | Do NOT import until re-exported; live workflow wins |
+| `workflows/instantly-smtp-accounts-bulk-upload.json` | Canonical workflow JSON, single source of truth | Import this; do not hand-rebuild from screenshots. |
 How to use this guide:
 1. First-time setup: read top to bottom. Do not skip Conventions — `Email` vs `email` casing causes most first-run failures.
 2. Second run and beyond: jump to 5-Minute Quickstart and `RUNBOOK.md`.
 3. Customization: go to `GUIDE.md` for field maps and safe edit recipes.
-4. All paths are relative to repo root.
-> Rule: the live n8n canvas is the source of truth. If these docs and the canvas disagree, the canvas wins and the docs need an update.
+4. All paths are relative to repo root. Canonical workflow is always:
+```text
+workflows/instantly-smtp-accounts-bulk-upload.json
+```
+> Rule: if the n8n canvas and the JSON file disagree, the JSON file wins. Re-import from `workflows/` and re-apply IDs and keys.
 ## What It Does
 - Reads a Google Sheet as input. `Get Sheet Rows` pulls every row from the accounts sheet (columns A–K, header + data). Nothing is ever written back.
 - Drops unusable rows up front. `Keep Valid Rows` (Code gate, `code@2`) keeps only rows whose `Email` has non-whitespace content — empty and whitespace-only trailing rows never enter the loop. (A plain "is not empty" check lets a `" "` cell through; the trim-aware gate does not.)
@@ -305,7 +307,13 @@ Checklist:
 - [ ] Sheet shared with OAuth identity.
 - [ ] No live secrets in exported JSON.
 ## Import the Workflow
-> The checked-in JSON is stale (8-node revision). Until it is re-exported, work directly on the live `Instantly SMTP Accounts – Bulk Upload` workflow in n8n. If you import from file, verify the canvas shows the 7 nodes named above — `Keep Valid Rows` as a Code node and no `Update Status` node — and treat the import as a starting sketch, not the finished workflow.
+### Import steps
+1. Confirm canonical file exists:
+```bash
+ls -l workflows/instantly-smtp-accounts-bulk-upload.json
+```
+2. n8n → Workflows → ⋯ → Import from File → select that JSON.
+3. Verify canvas shows 7 nodes with the exact names in [Workflow at a Glance](#workflow-at-a-glance--7-nodes). Accept `typeVersion` migration prompt if shown.
 Confirm settings:
 | Setting | Expected | Why |
 |---------|----------|-----|
@@ -376,7 +384,7 @@ smoke02@test-acme.dev,Smoke,ZeroTwo,smoke02@test-acme.dev,REPLACE_IMAP_PASS_02,i
 ## Repository Layout
 ```text
 n8n-instantly-smtp-bulk-upload/
-├── workflows/instantly-smtp-accounts-bulk-upload.json  # STALE (8-node) — do not import until re-exported
+├── workflows/instantly-smtp-accounts-bulk-upload.json  # canonical workflow (import this)
 ├── docs/README.md    # you are here (onboarding)
 ├── docs/GUIDE.md     # deep-dive operator guide
 ├── docs/RUNBOOK.md   # production operations + triage
@@ -416,7 +424,7 @@ Both HTTP nodes share the same key. Fixing one and forgetting the other leaves h
 ## Maintenance and Versioning
 | Item | Policy |
 |------|--------|
-| Canonical artifact (pending) | Live canvas until `workflows/instantly-smtp-accounts-bulk-upload.json` is re-exported; canvas ephemeral until then. |
+| Canonical artifact | `workflows/instantly-smtp-accounts-bulk-upload.json` in git; re-export from canvas after changes. |
 | Settings | Keep `active: false`, `executionOrder: v1`, `saveDataSuccessExecution: none`, `saveManualExecutions: true` unless RUNBOOK scheduling says otherwise. |
 | Node upgrades | Accept migrations, diff vs 7-node list, run smoke test. |
 | Failures leave no sheet trail | Audit via execution log + dashboard delta only. |
