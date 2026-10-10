@@ -6,8 +6,6 @@
 > Environment: n8n (self-hosted or Cloud) + Google Sheets + Instantly.ai v2 API
 > Run mode: **Manual, supervised, sequential. No schedule. No concurrency. No sheet writes.**
 
-> **Source-of-truth notice.** The live n8n workflow (`Instantly SMTP Accounts – Bulk Upload`, 7 nodes) is canonical. The checked-in JSON is an older 8-node revision — do not import it until re-exported.
-
 ---
 
 ## Document Control
